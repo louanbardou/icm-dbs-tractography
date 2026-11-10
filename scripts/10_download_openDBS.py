@@ -6,7 +6,7 @@ Usage : FTP_USER=... FTP_PASS=... python3 scripts/10_download_openDBS.py sub-DBS
 """
 import ftplib, os, re, sys, time
 HOST, PORT = 'ftp.scidb.cn', 2121
-DEST = os.environ.get('BIDS', '/Users/louan/Folder/ICM/data/bids')
+DEST = os.environ.get('BIDS', os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'bids'))
 USER, PASS = os.environ['FTP_USER'], os.environ['FTP_PASS']
 
 def connect():

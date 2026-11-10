@@ -2,8 +2,8 @@
 # Étape 11 — connectome par arêtes (comme Presidio) : parcellation 388 nœuds en espace natif, matrice SIFT2 du cerveau entier, et pour chaque VTA
 # (L, R) matrice des streamlines qui le traversent. Sortie : triangle supérieur (75 078 arêtes) en CSV, une ligne par VTA.
 # Usage : SUB=sub-DBS02 T=... L=... zsh scripts/11_edges.sh   (a besoin de 08_tracto/tracks_10M.tck)
-set -e; set -o pipefail; export PATH=/Users/louan/opt/ants-2.6.5/bin:$PATH
-ICM=${ICM:-/Users/louan/Folder/ICM}; SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+set -e; set -o pipefail; [[ -n $ANTS_BIN ]] && export PATH=$ANTS_BIN:$PATH
+ICM=${ICM:-${0:A:h:h}}; SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
 R=$T/09_rois; TR=$T/08_tracto; O=$T/11_edges; mkdir -p $O
 REF=$L/coregistration/anat/${SUB}_ses-preop_space-anchorNative_desc-preproc_acq-iso_T1w.nii
 WARP=$L/normalization/transformations/${SUB}_from-MNI152NLin2009bAsym_to-anchorNative_desc-ants.nii.gz
@@ -26,5 +26,5 @@ for h in L R; do
   conn $O/vta_$h.tck $O/vta_${h}_w.txt $O/vta_$h
   rm -f $O/vta_$h.tck
 done
-$ICM/tools/.venv/bin/python -I $ICM/scripts/11b_upper_tri.py $O $SUB
+${PYTHON:-python3} -I $ICM/scripts/11b_upper_tri.py $O $SUB
 echo "== fini $(date +%H:%M:%S)"

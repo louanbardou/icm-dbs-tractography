@@ -3,7 +3,7 @@
 # Usage : zsh scripts/06_fod.sh
 set -e; set -o pipefail
 V=03b_eddy
-ICM=${ICM:-/Users/louan/Folder/ICM}
+ICM=${ICM:-${0:A:h:h}}
 SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
 I=$T/05_${V}; OUT=$T/06_fod; QC=$QCR/06_fod
 mkdir -p $OUT $QC
@@ -16,5 +16,5 @@ mtnormalise $OUT/wmfod.mif $OUT/wmfod_norm.mif $OUT/gm.mif $OUT/gm_norm.mif $OUT
 echo "== 4. pics de FOD pour la visu"
 sh2peaks $OUT/wmfod_norm.mif $OUT/peaks.mif -num 3 -threshold 0.1 -mask $I/mask_T1.mif -force
 echo "== 5. QC"
-$ICM/tools/.venv/bin/python $ICM/scripts/qc_fod.py $OUT $I $QC
+${PYTHON:-python3} $ICM/scripts/qc_fod.py $OUT $I $QC
 echo "== fini. Regarder $QC puis écrire $QC/DECISION.md"

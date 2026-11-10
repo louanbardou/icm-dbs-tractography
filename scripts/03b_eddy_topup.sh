@@ -3,7 +3,7 @@
 # Usage : zsh scripts/03b_eddy_topup.sh        (30-60 min sur M1 Max)
 set -e
 set -o pipefail
-ICM=${ICM:-/Users/louan/Folder/ICM}
+ICM=${ICM:-${0:A:h:h}}
 SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
 IN=$T/02_denoise/dwi_den_unr.mif
 SYN=$T/03b_synb0
@@ -34,5 +34,5 @@ dwiextract $OUT/dwi_preproc.mif -shells 1000 - | mrmath - mean $OUT/mean_b1000_p
 
 echo "== 4. eddy_quad + montages QC"
 eddy_quad $S/dwi_post_eddy -idx $S/index.txt -par $S/acqp.txt -m $S/b0_brain_mask.nii.gz -b $S/bvals -o $QC/eddy_quad || echo "eddy_quad a échoué (non bloquant)"
-$ICM/tools/.venv/bin/python $ICM/scripts/qc_eddy_montage.py $IN $OUT/dwi_preproc.mif $S $QC
+${PYTHON:-python3} $ICM/scripts/qc_eddy_montage.py $IN $OUT/dwi_preproc.mif $S $QC
 echo "== fini. Regarder $QC puis écrire $QC/DECISION.md"

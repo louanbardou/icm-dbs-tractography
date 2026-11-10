@@ -3,7 +3,7 @@
 # Usage : zsh scripts/04_bias_mask.sh 03a_eddy      puis      zsh scripts/04_bias_mask.sh 03b_eddy
 set -e; set -o pipefail
 V=$1; [[ -z $V ]] && { echo "usage: $0 03a_eddy|03b_eddy"; exit 1; }
-ICM=${ICM:-/Users/louan/Folder/ICM}
+ICM=${ICM:-${0:A:h:h}}
 SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
 IN=$T/$V/dwi_preproc.mif
 OUT=$T/04_${V}; QC=$QCR/04_${V}
@@ -17,5 +17,5 @@ mrconvert $OUT/b0.mif $OUT/b0.nii.gz -force
 mrconvert $OUT/mask.mif $OUT/mask.nii.gz -force
 bet $OUT/b0.nii.gz $OUT/b0_bet -m -f 0.3 -R
 echo "== [$V] QC"
-$ICM/tools/.venv/bin/python $ICM/scripts/qc_mask.py $OUT $QC
+${PYTHON:-python3} $ICM/scripts/qc_mask.py $OUT $QC
 echo "== fini [$V]. Regarder $QC puis écrire $QC/DECISION.md"

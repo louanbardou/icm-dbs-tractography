@@ -3,7 +3,7 @@
 # Faisceaux : hyperdirecte (STN_motor <-> cortex moteur), STN-GPi, CST (M1 <-> tronc), fibres du VTA (toutes, et VTA <-> cortex moteur).
 # Usage : zsh scripts/09c_bundles.sh   (une lecture de 4,5 Go par faisceau)
 set -e; set -o pipefail
-ICM=${ICM:-/Users/louan/Folder/ICM}; T=${T:-$ICM/derivatives/tracto}; R=$T/09_rois; O=$T/09_bundles; TR=$T/08_tracto
+ICM=${ICM:-${0:A:h:h}}; T=${T:-$ICM/derivatives/tracto}; R=$T/09_rois; O=$T/09_bundles; TR=$T/08_tracto
 mkdir -p $O
 for n in STN_L STN_R STN_motor_L STN_motor_R; do [ -f $R/${n}_dil1.nii.gz ] || maskfilter -quiet -force $R/$n.nii.gz dilate -npass 1 $R/${n}_dil1.nii.gz; done
 W=(-tck_weights_in $TR/sift2_weights.txt)

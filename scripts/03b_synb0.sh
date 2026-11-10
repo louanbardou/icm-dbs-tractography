@@ -2,7 +2,7 @@
 # Étape 3, option B, partie 1 — Synb0-DISCO : b0 synthétique non distordu depuis le T1, puis topup (dans le conteneur).
 # Usage : zsh scripts/03b_synb0.sh        (Docker Desktop doit tourner ; ~1-2 h la première fois, FreeSurfer inclus)
 set -e
-ICM=${ICM:-/Users/louan/Folder/ICM}
+ICM=${ICM:-${0:A:h:h}}
 SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
 IN=$T/02_denoise/dwi_den_unr.mif
 T1=$L/coregistration/anat/${SUB}_ses-preop_space-anchorNative_desc-preproc_acq-iso_T1w.nii

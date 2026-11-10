@@ -1,0 +1,1 @@
+Kept for provenance: the first version of the pipeline (interactive, with visual go/no-go gates) and the Lead-DBS reconstruction redo (WP2) for sub-DBS01. Paths are specific to the original machine and not meant to be reused. The reusable pipeline is in `scripts/`.

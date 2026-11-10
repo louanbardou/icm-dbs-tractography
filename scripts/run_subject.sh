@@ -4,11 +4,12 @@
 # Sorties : derivatives/cohort/<SUB>/ (intermédiaires supprimés à la fin), qc_cohort/<SUB>/, derivatives/cohort/<SUB>/summary.tsv
 set -o pipefail
 export SUB=$1; [[ -z $SUB ]] && { echo "usage: $0 sub-DBSxx"; exit 1; }
-export ICM=/Users/louan/Folder/ICM; export T=$ICM/derivatives/cohort/$SUB; export QCR=$ICM/qc_cohort/$SUB
+export ICM=${ICM:-${0:A:h:h}}; export T=$ICM/derivatives/cohort/$SUB; export QCR=$ICM/qc_cohort/$SUB
 export L=$ICM/data/bids/derivatives/leaddbs/$SUB
+mkdir -p $T; mkdir $T/.lock 2>/dev/null || { echo "[$SUB] déjà en cours (verrou $T/.lock)"; exit 0; }; trap 'rmdir $T/.lock 2>/dev/null' EXIT
 [[ -e $T/DONE ]] && { echo "[$SUB] déjà terminé"; exit 0; }
 S=$ICM/scripts; LOG=$T/log; mkdir -p $T $QCR $LOG
-export PATH=/Users/louan/opt/ants-2.6.5/bin:$PATH
+[[ -n $ANTS_BIN ]] && export PATH=$ANTS_BIN:$PATH
 step(){ # nom, fichier témoin, commande...
   n=$1; sentinel=$2; shift 2
   if [[ -e $T/$sentinel ]]; then echo "[$SUB] $n : déjà fait"; return 0; fi
@@ -22,7 +23,7 @@ for f in $ICM/data/bids/$SUB/ses-preop/dwi/${SUB}_ses-preop_dwi.nii.gz $L/coregi
 rm -f $T/FAILED
 step 01_import      01_raw/dwi.mif                     zsh $S/01_import_qc.sh   || exit 1
 # contrôle automatique des bvec : le meilleur essai doit être l'identité (aucun flip, permutation 0,1,2) et nettement supérieur aux autres
-$ICM/tools/.venv/bin/python - <<PY || { echo "[$SUB] bvec : contrôle dwigradcheck NON concluant (voir $QCR/01_raw/dwigradcheck.txt)"; echo bvec > $T/FAILED; exit 1; }
+${PYTHON:-python3} - <<PY || { echo "[$SUB] bvec : contrôle dwigradcheck NON concluant (voir $QCR/01_raw/dwigradcheck.txt)"; echo bvec > $T/FAILED; exit 1; }
 import re,sys
 L=[l.split() for l in open("$QCR/01_raw/dwigradcheck.txt") if re.match(r'^\s*[0-9.]+\s',l)]
 if not L: sys.exit(1)
@@ -47,7 +48,7 @@ step 08_tracto      08_tracto/sift2_weights.txt        zsh $S/08_tracto.sh      
 step 09c_bundles    09_bundles/stats.tsv               zsh $S/09c_bundles.sh    || exit 1
 step 11_edges       11_edges/vta_R_upper_tri_sift2.csv zsh $S/11_edges.sh       || exit 1
 # résumé numérique (contrôles automatiques à relire ensuite)
-$ICM/tools/.venv/bin/python $S/subject_summary.py > $T/summary.tsv 2> $LOG/summary.log
+${PYTHON:-python3} $S/subject_summary.py > $T/summary.tsv 2> $LOG/summary.log
 # nettoyage des intermédiaires lourds (le disque ne tient pas 13 patients complets)
 setopt null_glob
 rm -rf $T/03b_eddy/scratch $T/03b_synb0/OUTPUTS/*.nii.gz.tmp $T/07_5tt/scratch $T/02_denoise/dwi_den.mif $T/02_denoise/residual.mif $T/08_tracto/tracks_10M.tck \

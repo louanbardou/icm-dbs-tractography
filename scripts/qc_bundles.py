@@ -1,6 +1,6 @@
 # QC 9c : TDI (pondérée SIFT2) de chaque faisceau, projection d'intensité maximale sur le T1, + contours des ROIs d'inclusion.
-import nibabel as nib, numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-R='/Users/louan/Folder/ICM/'; T=R+'derivatives/tracto/'; B=T+'09_bundles/'
+import os, nibabel as nib, numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+R=os.environ.get('ICM',os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+'/'; T=R+'derivatives/tracto/'; B=T+'09_bundles/'
 t1=nib.load(T+'05_ref/T1.nii.gz'); ref=nib.load(B+'cst_L.tdi.nii.gz'); V=nib.load(T+'08_tracto/tdi_sift2_1mm.mif'.replace('.mif','.mif')) if False else None
 import nibabel.processing as P
 T1=P.resample_from_to(t1,(ref.shape,ref.affine),order=1).get_fdata()

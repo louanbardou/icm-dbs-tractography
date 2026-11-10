@@ -9,7 +9,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.metrics import roc_auc_score
 from scipy.stats import spearmanr
-ICM = os.environ.get('ICM', '/Users/louan/Folder/ICM'); D = np.load(f'{ICM}/derivatives/prediction/master.npz', allow_pickle=True)
+ICM = os.environ.get('ICM', os.path.dirname(os.path.dirname(os.path.abspath(__file__)))); D = np.load(f'{ICM}/derivatives/prediction/master.npz', allow_pickle=True)
 key = os.environ.get('FEAT', 'X'); X = np.log1p(D[key]); y = D['y']; imp = D['improvement']; g = D['groups']
 keep = (D[key] > 0).sum(0) >= 2; X = X[:, keep]; print('échantillons', len(y), 'patients', len(set(g)), 'arêtes retenues (présentes dans >=2 VTA):', X.shape[1], '| y=1:', y.sum())
 def loso(make, target, proba):

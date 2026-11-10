@@ -4,7 +4,7 @@
 Label : amélioration de l'UPDRS III à 1 mois, OFF-stim -> stimulation haute fréquence (CH, 130 Hz, réglage clinique), moyenne des 2 évaluateurs.
 Attention : les 3 conditions CL/CH/CV (60 Hz / 130 Hz / variable) ont le MÊME VTA ; elles ne donnent donc pas d'échantillons supplémentaires."""
 import numpy as np, pandas as pd, os, sys, json
-ICM = os.environ.get('ICM', '/Users/louan/Folder/ICM'); thr = os.environ.get('THR')
+ICM = os.environ.get('ICM', os.path.dirname(os.path.dirname(os.path.abspath(__file__)))); thr = os.environ.get('THR')
 def edir(sub):
     for d in (f'{ICM}/derivatives/cohort/{sub}/11_edges', f'{ICM}/derivatives/tracto/11_edges'):
         if sub != 'sub-DBS01' and 'tracto' in d: continue

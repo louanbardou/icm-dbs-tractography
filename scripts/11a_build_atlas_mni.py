@@ -2,7 +2,7 @@
 """Atlas de parcellation en MNI152NLin2009b (grille 1 mm) : Glasser HCP-MMP1 volumique (360 corticaux, gauche/droite séparés par le signe de x)
 + Melbourne/Tian (14 sous-corticaux par hémisphère). Les régions Tian écrasent Glasser là où ils se recouvrent. Le STN est ajouté par patient (étape 11)."""
 import nibabel as nb, numpy as np, os, subprocess, sys
-ICM = os.environ.get('ICM', '/Users/louan/Folder/ICM'); O = f'{ICM}/data/atlases'; os.makedirs(O, exist_ok=True)
+ICM = os.environ.get('ICM', os.path.dirname(os.path.dirname(os.path.abspath(__file__)))); O = f'{ICM}/data/atlases'; os.makedirs(O, exist_ok=True)
 ref = nb.load(f'{ICM}/derivatives/cohort/_shared/fsl2009b/t1_mni2009b_1mm.nii.gz')
 shape, aff = ref.shape, ref.affine
 def resamp(img, order=0):
@@ -15,7 +15,7 @@ for i in range(1, 181):
     n = open(f'{O}/glasser/glasser_labels.txt').read().split('\n')[i-1].split()[1].replace('L_', '').replace('_ROI', '')
     names[i] = 'L_' + n; names[i + 180] = 'R_' + n
 lab[(g > 0) & (x <= 0)] = g[(g > 0) & (x <= 0)]; lab[(g > 0) & (x > 0)] = g[(g > 0) & (x > 0)] + 180
-T = '/Users/louan/opt/leaddbs/templates/space/MNI152NLin2009bAsym/atlases/Melbourne Subcortex Atlas (Tian 2020)'
+T = os.path.expanduser(os.environ.get('LEADDBS_DIR','~/opt/leaddbs')) + '/templates/space/MNI152NLin2009bAsym/atlases/Melbourne Subcortex Atlas (Tian 2020)'
 parts = ['aCAU', 'pCAU', 'aPUT', 'pPUT', 'aGP', 'pGP', 'aTHA', 'pTHA', 'NAc', 'aHIP', 'pHIP', 'lAMY', 'mAMY']
 k = 360
 for h, H in (('lh', 'L'), ('rh', 'R')):

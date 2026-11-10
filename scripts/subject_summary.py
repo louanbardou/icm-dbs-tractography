@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Résumé numérique d'un patient (contrôles automatiques, TSV clé/valeur). Env : SUB, T, ICM."""
 import os, subprocess, glob, json, numpy as np, nibabel as nib
-SUB=os.environ['SUB']; T=os.environ['T']; ICM=os.environ.get('ICM','/Users/louan/Folder/ICM')
+SUB=os.environ['SUB']; T=os.environ['T']; ICM=os.environ.get('ICM',os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 def sh(c):
     try: return subprocess.run(c,shell=True,capture_output=True,text=True,timeout=300).stdout.strip()
     except Exception: return ''

@@ -2,7 +2,7 @@
 # Étape 3, option A — mouvement + courants de Foucault avec FSL eddy, SANS correction de susceptibilité (pas de reverse-PE).
 # Usage : zsh scripts/03a_eddy_only.sh        (30-60 min sur M1 Max)
 set -e
-ICM=/Users/louan/Folder/ICM
+ICM=${ICM:?définir ICM}
 IN=$ICM/derivatives/tracto/02_denoise/dwi_den_unr.mif
 OUT=$ICM/derivatives/tracto/03a_eddy
 QC=$ICM/qc/03a_eddy

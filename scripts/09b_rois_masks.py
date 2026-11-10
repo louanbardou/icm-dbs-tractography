@@ -1,7 +1,7 @@
 # Étape 9b : masques ROI natifs (grille anchorNative 0,7 mm) à partir des atlas warpés + DISTAL + VTA.
 import nibabel as nib, numpy as np, os, subprocess, tempfile
-ANTS='/Users/louan/opt/ants-2.6.5/bin/antsApplyTransforms'
-R=os.environ.get('ICM','/Users/louan/Folder/ICM'); SUB=os.environ.get('SUB','sub-DBS01'); L=os.environ.get('L',R+'/data/bids/derivatives/leaddbs/'+SUB); O=os.environ.get('T',R+'/derivatives/tracto')+'/09_rois'
+ANTS='antsApplyTransforms'
+R=os.environ.get('ICM',os.path.dirname(os.path.dirname(os.path.abspath(__file__)))); SUB=os.environ.get('SUB','sub-DBS01'); L=os.environ.get('L',R+'/data/bids/derivatives/leaddbs/'+SUB); O=os.environ.get('T',R+'/derivatives/tracto')+'/09_rois'
 import glob
 STIM=sorted(glob.glob(L+'/stimulations/native/*/'+SUB+'_sim-binary_model-simbio_hemi-L.nii'))[0].rsplit('/'+SUB,1)[0]
 D=L+'/atlases/DISTAL Minimal (Ewert 2017)'
