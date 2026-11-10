@@ -21,7 +21,7 @@ if os.path.exists(q):
 f5=f'{T}/07_5tt/5tt_stn.mif'
 if os.path.exists(f5):
     p('5tt_volumes_mL(cGM,sGM,WM,CSF)',sh(f'for i in 0 1 2 3; do mrconvert -coord 3 $i {f5} - -quiet | mrstats - -output mean -quiet; done | tr "\\n" " "'))
-    p('STN_voxels_added',sh(f'mrstats {T}/07_5tt/stn_mask_T1grid.nii.gz -output sum -quiet'))
+    p('STN_voxels_added',sh(f'mrstats {T}/07_5tt/stn_mask_T1grid.nii.gz -ignorezero -output count -quiet'))
 t=f'{T}/08_tracto'
 if os.path.exists(t+'/sift2_mu.txt'): p('sift2_mu',open(t+'/sift2_mu.txt').read().strip())
 if os.path.exists(t+'/stats.txt'): p('tracks_len_mean_median_count',' '.join(open(t+'/stats.txt').read().split('\n')[-2].split()))

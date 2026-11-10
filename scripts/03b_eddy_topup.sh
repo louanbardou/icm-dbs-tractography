@@ -22,9 +22,10 @@ bet $S/b0_topup_mean $S/b0_brain -m -f 0.2 -R
 cp $SYN/OUTPUTS/topup_fieldcoef.nii.gz $SYN/OUTPUTS/topup_movpar.txt $S/
 
 echo "== 2. eddy_cpu avec --topup"
-eddy_cpu --imain=$S/dwi.nii.gz --mask=$S/b0_brain_mask.nii.gz --acqp=$S/acqp.txt --index=$S/index.txt \
+if [[ ${EDDY:-eddy_cpu} == eddy_openmp ]]; then export OMP_NUM_THREADS=${NTHR:-10}; NT=(); else NT=(--nthr=${NTHR:-10}); fi   # eddy FSL 6.0.1 : pas d option --nthr
+${EDDY:-eddy_cpu} --imain=$S/dwi.nii.gz --mask=$S/b0_brain_mask.nii.gz --acqp=$S/acqp.txt --index=$S/index.txt \
   --bvecs=$S/bvecs --bvals=$S/bvals --topup=$S/topup --out=$S/dwi_post_eddy \
-  --slm=linear --repol --data_is_shelled --niter=8 --fwhm=10,8,4,2,0,0,0,0 --nthr=10 -v 2>&1 | tee $QC/eddy.log
+  --slm=linear --repol --data_is_shelled --niter=8 --fwhm=10,8,4,2,0,0,0,0 "${NT[@]}" -v 2>&1 | tee $QC/eddy.log
 
 echo "== 3. retour en .mif avec les bvec tournés"
 mrconvert $S/dwi_post_eddy.nii.gz $OUT/dwi_preproc.mif -fslgrad $S/dwi_post_eddy.eddy_rotated_bvecs $S/bvals -force

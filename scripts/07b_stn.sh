@@ -8,7 +8,7 @@ A=$T/07_5tt; export PATH=/Users/louan/opt/ants-2.6.5/bin:$PATH
 REF=$T/05_ref/T1.nii.gz; D="$L/atlases/DISTAL Minimal (Ewert 2017)"
 for h in lh rh; do antsApplyTransforms -d 3 -i "$D/$h/STN.nii.gz" -r $REF -n Linear -o $A/stn_$h.nii.gz; done
 mrcalc $A/stn_lh.nii.gz 0.5 -gt $A/stn_rh.nii.gz 0.5 -gt -add 0 -gt $A/stn_mask_T1grid.nii.gz -datatype uint8 -force
-n=$(mrstats $A/stn_mask_T1grid.nii.gz -output sum -quiet); echo "STN voxels : $n"
+n=$(mrstats $A/stn_mask_T1grid.nii.gz -ignorezero -output count -quiet); echo "STN voxels : $n"
 [[ ${n%.*} -gt 100 ]] || { echo "STN vide ou trop petit : arrêt"; exit 4; }
 5ttedit -sgm $A/stn_mask_T1grid.nii.gz $A/5tt.mif $A/5tt_stn.mif -force
 5tt2gmwmi $A/5tt_stn.mif $A/gmwmi_stn.mif -force

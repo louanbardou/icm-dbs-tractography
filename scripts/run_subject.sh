@@ -37,7 +37,7 @@ step 07_5tt         07_5tt/5tt.mif                     zsh $S/07_5tt.sh         
 step 07b_stn        07_5tt/5tt_stn.mif                 zsh $S/07b_stn.sh        || exit 1
 step 09_rois        09_rois/cortexmotor_R.nii.gz       bash $S/09_rois_cohort.sh || exit 1
 waitdocker(){ until docker info >/dev/null 2>&1; do echo "[$SUB] Docker arrêté : en attente ($(date +%H:%M))"; open -g -b com.docker.docker 2>/dev/null; sleep 120; done; }
-[[ -e $T/03b_synb0/OUTPUTS/b0_all_topup.nii.gz ]] || waitdocker
+[[ -e $T/03b_synb0/OUTPUTS/b0_all_topup.nii.gz ]] || ! command -v docker >/dev/null || waitdocker
 step 03b_synb0      03b_synb0/OUTPUTS/b0_all_topup.nii.gz zsh $S/03b_synb0.sh   || exit 1
 step 03b_eddy       03b_eddy/dwi_preproc.mif           zsh $S/03b_eddy_topup.sh || exit 1
 step 04_bias_mask   04_03b_eddy/mask.mif               zsh $S/04_bias_mask.sh 03b_eddy || exit 1
@@ -45,9 +45,11 @@ step 05_coreg       05_03b_eddy/dwi_T1.mif             zsh $S/05_coreg.sh 03b_ed
 step 06_fod         06_fod/wmfod_norm.mif              zsh $S/06_fod.sh         || exit 1
 step 08_tracto      08_tracto/sift2_weights.txt        zsh $S/08_tracto.sh      || exit 1
 step 09c_bundles    09_bundles/stats.tsv               zsh $S/09c_bundles.sh    || exit 1
+step 11_edges       11_edges/vta_R_upper_tri_sift2.csv zsh $S/11_edges.sh       || exit 1
 # résumé numérique (contrôles automatiques à relire ensuite)
 $ICM/tools/.venv/bin/python $S/subject_summary.py > $T/summary.tsv 2> $LOG/summary.log
 # nettoyage des intermédiaires lourds (le disque ne tient pas 13 patients complets)
-rm -rf $T/03b_eddy/scratch $T/03b_synb0/OUTPUTS/*.nii.gz.tmp $T/07_5tt/scratch $T/02_denoise/dwi_den.mif $T/02_denoise/residual.mif \
-       $T/05_03b_eddy/dwi_T1.mif $T/04_03b_eddy/dwi_unb.mif $T/03b_eddy/dwi_preproc.mif $T/08_tracto/tracks_10M.tck $T/09_bundles/*.tdi.mif
+setopt null_glob
+rm -rf $T/03b_eddy/scratch $T/03b_synb0/OUTPUTS/*.nii.gz.tmp $T/07_5tt/scratch $T/02_denoise/dwi_den.mif $T/02_denoise/residual.mif $T/08_tracto/tracks_10M.tck \
+       $T/05_03b_eddy/dwi_T1.mif $T/04_03b_eddy/dwi_unb.mif $T/03b_eddy/dwi_preproc.mif  $T/09_bundles/*.tdi.mif
 echo "[$SUB] TERMINÉ $(date +%H:%M:%S)"; touch $T/DONE

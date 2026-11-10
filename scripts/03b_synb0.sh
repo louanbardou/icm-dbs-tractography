@@ -18,9 +18,15 @@ TRT=$(python3 -c "import json,sys;print(json.load(open('$J'))['TotalReadoutTime'
 printf "0 1 0 $TRT\n0 1 0 0.000\n" > $OUT/INPUTS/acqparams.txt
 
 echo "== 2. synb0-disco (conteneur linux/amd64 émulé sur M1, lent)"
-docker run --rm --platform linux/amd64 \
-  -v $OUT/INPUTS:/INPUTS -v $OUT/OUTPUTS:/OUTPUTS \
-  -v $HOME/.freesurfer/license.txt:/extra/freesurfer/license.txt \
-  --user $(id -u):$(id -g) \
-  leonyichencai/synb0-disco:v3.1 2>&1 | tee $OUT/synb0.log
+if command -v docker >/dev/null 2>&1; then
+  docker run --rm --platform linux/amd64 \
+    -v $OUT/INPUTS:/INPUTS -v $OUT/OUTPUTS:/OUTPUTS \
+    -v $HOME/.freesurfer/license.txt:/extra/freesurfer/license.txt \
+    --user $(id -u):$(id -g) \
+    leonyichencai/synb0-disco:v3.1 2>&1 | tee $OUT/synb0.log
+else   # serveur : on EST dans le conteneur synb0-disco ; /INPUTS et /OUTPUTS sont globaux, donc un seul patient à la fois (verrou)
+  sed "s#/INPUTS#$OUT/INPUTS#g; s#/OUTPUTS#$OUT/OUTPUTS#g" /extra/pipeline.sh > $OUT/pipeline_local.sh   # chemins du patient : plusieurs patients en parallèle
+  bash $OUT/pipeline_local.sh 2>&1 | tee $OUT/synb0.log; [[ ${pipestatus[1]} -eq 0 ]] || exit 1
+fi
+[[ -e $OUT/OUTPUTS/b0_all_topup.nii.gz ]] || { echo "ÉCHEC : b0_all_topup.nii.gz absent"; exit 1; }
 echo "== fini. Sorties dans $OUT/OUTPUTS (b0_u.nii.gz = b0 synthétique, b0_all_topup.nii.gz)"
