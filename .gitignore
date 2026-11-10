@@ -1,7 +1,7 @@
 # liste blanche : tout est ignoré sauf ce qui est explicitement repris
 *
 !.gitignore
-!README.md
+!/README.md
 !scripts/
 !scripts/*.sh
 !scripts/*.py
