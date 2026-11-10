@@ -22,6 +22,58 @@ The edge-connectome idea follows the Presidio work (per-VTA connectivity between
 
 Prediction (`12_build_master.py`, `13_loso_predict.py`): builds the VTA x edges matrix with clinical labels, then L1 logistic regression and ridge, evaluated leave-one-patient-out with a patient-level permutation test.
 
+## The pipeline in pictures
+
+These are the QC figures I looked at for the first subject before trusting each step. Legends in some of them are in French, sorry.
+
+**1. Import and QC.** First thing I check is the gradient table. A flipped axis doesn't crash anything, it just gives wrong tracts, so it's the cheapest check with the biggest payoff.
+
+<img src="qc/01_raw/01_shells_3plans.png" width="380" alt="diffusion directions of the three shells">
+
+**2. Denoising.** MP-PCA and Gibbs removal. The residual (what was removed) should look like pure noise. If you can see anatomy in it, something is off.
+
+<img src="qc/02_denoise/01_denoise_brut_debruite_residu.png" width="520" alt="raw, denoised and residual images">
+
+**3. Distortions.** The dataset has no reverse-phase scan, so Synb0-DISCO predicts an undistorted b0 from the T1 and topup uses it. Then eddy corrects motion and eddy currents. Good result = the T1 contour follows the b0 edges.
+
+<img src="qc/03b_synb0/02_contour_T1_avant_apres.png" width="520" alt="T1 contour over the b0 before and after distortion correction">
+
+**4. Coregistration.** Rigid registration of the b0 onto the T1 (FLIRT, mutual information). I stay in the patient's native space so the tracts line up with the Lead-DBS electrodes. In a checkerboard, edges must continue across tiles.
+
+<img src="qc/05_03b_eddy/01_damier_T1_b0.png" width="620" alt="checkerboard of T1 and b0">
+
+**5. Fibre model.** Multi-shell CSD. Three shells let me separate white matter, grey matter and CSF.
+
+<img src="qc/06_fod/04_pics_FOD.png" width="520" alt="fibre orientation peaks">
+
+**6. Tissues, with the STN as grey matter.** ACT stops streamlines at the grey/white boundary and the STN is too small to be segmented automatically, so I add it from the authors' atlas as subcortical grey matter. Without that, streamlines go through the STN instead of ending in it.
+
+<img src="qc/07_5tt/04_STN_ajoute_en_sGM.png" width="520" alt="STN added as subcortical grey matter">
+
+**7. Tractography.** 10 million streamlines (iFOD2 + ACT), weighted with SIFT2.
+
+<img src="qc/08_tracto/02_streamlines_projections.png" width="700" alt="whole-brain tractogram projections">
+
+**8. DBS bundles.** Hyperdirect, STN-GPi, corticospinal and the bundles through the VTA. My first definition kept anything that touched the ROIs, which looked wrong by eye, so now both endpoints have to be in the regions.
+
+<img src="qc/09_bundles/01_faisceaux_MIP.png" width="420" alt="bundle projections">
+
+**9. Redoing Lead-DBS.** My PaCER contacts land within about 0.3 mm of the authors'. I didn't correct anything by hand, on purpose: it keeps the pipeline reproducible, but it means a small error is possible. The authors did correct theirs.
+
+<img src="qc/WP2_leaddbs/02_post/03_contacts_PaCER_sur_CT.png" width="480" alt="PaCER contacts over the CT">
+
+**10. The VTA.** Mine came out about twice too big (red = mine, cyan = authors). The cause was a flipped electrode trajectory in my reconstruction file.
+
+<img src="qc/WP2_leaddbs/03_vta/04_VTA_nous_vs_auteurs.png" width="520" alt="our VTA versus the authors' VTA">
+
+**11. Edge connectome.** For each VTA, the streamlines that go through it are summed between all pairs of the 388 regions. The VTA keeps about 500 of the 75,078 edges.
+
+<img src="qc/edges/edge_connectome.png" width="800" alt="edge connectivity matrices of the whole brain and of the two VTAs">
+
+**12. Prediction.** The label is the UPDRS III improvement at 1 month, cut at the median. Leave-one-patient-out found nothing with 9 patients.
+
+<img src="qc/prediction/improvement_per_patient.png" width="440" alt="UPDRS III improvement per patient">
+
 ## Requirements
 
 MRtrix3 (3.0.8), FSL (6.0.x), ANTs, Python with numpy, scipy, nibabel, scikit-learn, matplotlib, h5py. Synb0-DISCO either through Docker (`leonyichencai/synb0-disco:v3.1`, needs a FreeSurfer license) or by running inside that image on a Linux GPU machine (the script detects it). The step 07b/09 inputs come from a Lead-DBS reconstruction (see below).
