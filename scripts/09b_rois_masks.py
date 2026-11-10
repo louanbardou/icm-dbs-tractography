@@ -1,13 +1,15 @@
 # Étape 9b : masques ROI natifs (grille anchorNative 0,7 mm) à partir des atlas warpés + DISTAL + VTA.
 import nibabel as nib, numpy as np, os, subprocess, tempfile
 ANTS='/Users/louan/opt/ants-2.6.5/bin/antsApplyTransforms'
-R='/Users/louan/Folder/ICM'; L=R+'/data/bids/derivatives/leaddbs/sub-DBS01'; O=R+'/derivatives/tracto/09_rois'
+R=os.environ.get('ICM','/Users/louan/Folder/ICM'); SUB=os.environ.get('SUB','sub-DBS01'); L=os.environ.get('L',R+'/data/bids/derivatives/leaddbs/'+SUB); O=os.environ.get('T',R+'/derivatives/tracto')+'/09_rois'
+import glob
+STIM=sorted(glob.glob(L+'/stimulations/native/*/'+SUB+'_sim-binary_model-simbio_hemi-L.nii'))[0].rsplit('/'+SUB,1)[0]
 D=L+'/atlases/DISTAL Minimal (Ewert 2017)'
 ju=nib.load(O+'/Juelich-maxprob-thr25-1mm_native.nii.gz'); J=np.asarray(ju.dataobj).astype(int)
 ho=np.asarray(nib.load(O+'/HarvardOxford-cort-maxprob-thr25-1mm_native.nii.gz').dataobj).astype(int)
 hs=np.asarray(nib.load(O+'/HarvardOxford-sub-maxprob-thr25-1mm_native.nii.gz').dataobj).astype(int)
 aff=ju.affine
-REF=L+'/coregistration/anat/sub-DBS01_ses-preop_space-anchorNative_desc-preproc_acq-iso_T1w.nii'
+REF=L+'/coregistration/anat/'+SUB+'_ses-preop_space-anchorNative_desc-preproc_acq-iso_T1w.nii'
 def onref(path):
     # rééchantillonne une image (boîte découpée ou autre grille) sur la grille T1 anchorNative, sans transformation (identité, linéaire)
     t=tempfile.mktemp(suffix='.nii.gz'); subprocess.run([ANTS,'-d','3','-i',path,'-r',REF,'-n','Linear','-o',t],check=True,capture_output=True)
@@ -34,7 +36,7 @@ for s in 'LR':
     for nm,h in (('STN','STN'),('STN_motor','STN_motor'),('GPi','GPi'),('RN','RN')):
         d=D+'/'+('lh' if s=='L' else 'rh')+f'/{nm}.nii.gz'
         save(f'{nm}_{s}',onref(d)>0.5)
-    v=nib.load(L+f'/stimulations/native/month1_par/sub-DBS01_sim-binary_model-simbio_hemi-{s}.nii')
-    print('VTA',s,v.shape,'vs T1',J.shape); save(f'VTA_{s}',onref(L+f'/stimulations/native/month1_par/sub-DBS01_sim-binary_model-simbio_hemi-{s}.nii')>0.5)
+    v=nib.load(STIM+f'/{SUB}_sim-binary_model-simbio_hemi-{s}.nii')
+    print('VTA',s,v.shape,'vs T1',J.shape); save(f'VTA_{s}',onref(STIM+f'/{SUB}_sim-binary_model-simbio_hemi-{s}.nii')>0.5)
 save('brainstem',hs==8)
 save('thalamus_L',hs==4); save('thalamus_R',hs==15)

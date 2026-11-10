@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh
 # Étape 2 — débruitage MP-PCA (dwidenoise) + suppression des anneaux de Gibbs (mrdegibbs). Usage : zsh scripts/02_denoise.sh
 set -e
-ICM=/Users/louan/Folder/ICM
-IN=$ICM/derivatives/tracto/01_raw/dwi.mif
-OUT=$ICM/derivatives/tracto/02_denoise
-QC=$ICM/qc/02_denoise
+ICM=${ICM:-/Users/louan/Folder/ICM}
+SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+IN=$T/01_raw/dwi.mif
+OUT=$T/02_denoise
+QC=$QCR/02_denoise
 mkdir -p $OUT $QC
 
 echo "== 1. dwidenoise : MP-PCA, fenêtre 5x5x5 (défaut), sort aussi la carte de bruit sigma"

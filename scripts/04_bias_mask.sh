@@ -3,9 +3,10 @@
 # Usage : zsh scripts/04_bias_mask.sh 03a_eddy      puis      zsh scripts/04_bias_mask.sh 03b_eddy
 set -e; set -o pipefail
 V=$1; [[ -z $V ]] && { echo "usage: $0 03a_eddy|03b_eddy"; exit 1; }
-ICM=/Users/louan/Folder/ICM
-IN=$ICM/derivatives/tracto/$V/dwi_preproc.mif
-OUT=$ICM/derivatives/tracto/04_${V}; QC=$ICM/qc/04_${V}
+ICM=${ICM:-/Users/louan/Folder/ICM}
+SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+IN=$T/$V/dwi_preproc.mif
+OUT=$T/04_${V}; QC=$QCR/04_${V}
 mkdir -p $OUT $QC
 echo "== [$V] biais (ANTs N4)"
 dwibiascorrect ants $IN $OUT/dwi_unb.mif -bias $OUT/bias.mif -nthreads 10 -force

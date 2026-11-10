@@ -2,8 +2,9 @@
 # Étape 8 — tractographie globale iFOD2 + ACT (5tt avec STN en GM sous-corticale), seeds à l'interface GM/WM, puis SIFT2.
 # Usage : zsh scripts/08_tracto.sh        (45-90 min estimés sur M1 Max ; tout est local)
 set -e; set -o pipefail
-ICM=/Users/louan/Folder/ICM; T=$ICM/derivatives/tracto
-F=$T/06_fod; A=$T/07_5tt; OUT=$T/08_tracto; QC=$ICM/qc/08_tracto
+ICM=${ICM:-/Users/louan/Folder/ICM}
+SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+F=$T/06_fod; A=$T/07_5tt; OUT=$T/08_tracto; QC=$QCR/08_tracto
 mkdir -p $OUT $QC
 echo "== 1. tckgen 10M (iFOD2, ACT, backtrack, crop_at_gmwmi, seed_gmwmi) — début $(date +%H:%M:%S)"
 tckgen $F/wmfod_norm.mif $OUT/tracks_10M.tck -act $A/5tt_stn.mif -backtrack -crop_at_gmwmi -seed_gmwmi $A/gmwmi_stn.mif \

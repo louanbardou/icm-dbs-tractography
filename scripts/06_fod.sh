@@ -3,8 +3,9 @@
 # Usage : zsh scripts/06_fod.sh
 set -e; set -o pipefail
 V=03b_eddy
-ICM=/Users/louan/Folder/ICM
-I=$ICM/derivatives/tracto/05_${V}; OUT=$ICM/derivatives/tracto/06_fod; QC=$ICM/qc/06_fod
+ICM=${ICM:-/Users/louan/Folder/ICM}
+SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+I=$T/05_${V}; OUT=$T/06_fod; QC=$QCR/06_fod
 mkdir -p $OUT $QC
 echo "== 1. fonctions de réponse WM/GM/CSF (dhollander, sans a priori)"
 dwi2response dhollander $I/dwi_T1.mif $OUT/wm.txt $OUT/gm.txt $OUT/csf.txt -voxels $OUT/voxels.mif -mask $I/mask_T1.mif -nthreads 10 -force

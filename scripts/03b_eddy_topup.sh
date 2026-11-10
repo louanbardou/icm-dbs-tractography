@@ -3,11 +3,12 @@
 # Usage : zsh scripts/03b_eddy_topup.sh        (30-60 min sur M1 Max)
 set -e
 set -o pipefail
-ICM=/Users/louan/Folder/ICM
-IN=$ICM/derivatives/tracto/02_denoise/dwi_den_unr.mif
-SYN=$ICM/derivatives/tracto/03b_synb0
-OUT=$ICM/derivatives/tracto/03b_eddy
-QC=$ICM/qc/03b_eddy
+ICM=${ICM:-/Users/louan/Folder/ICM}
+SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+IN=$T/02_denoise/dwi_den_unr.mif
+SYN=$T/03b_synb0
+OUT=$T/03b_eddy
+QC=$QCR/03b_eddy
 S=$OUT/scratch
 mkdir -p $OUT $QC; rm -rf $S; mkdir -p $S
 

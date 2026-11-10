@@ -3,9 +3,10 @@
 # Usage : zsh scripts/05_coreg.sh 03a_eddy ; zsh scripts/05_coreg.sh 03b_eddy
 set -e; set -o pipefail
 V=$1; [[ -z $V ]] && { echo "usage: $0 03a_eddy|03b_eddy"; exit 1; }
-ICM=/Users/louan/Folder/ICM
-T1=$ICM/data/bids/derivatives/leaddbs/sub-DBS01/coregistration/anat/sub-DBS01_ses-preop_space-anchorNative_desc-preproc_acq-iso_T1w.nii
-REF=$ICM/derivatives/tracto/05_ref; I=$ICM/derivatives/tracto/04_${V}; OUT=$ICM/derivatives/tracto/05_${V}; QC=$ICM/qc/05_${V}
+ICM=${ICM:-/Users/louan/Folder/ICM}
+SUB=${SUB:-sub-DBS01}; T=${T:-$ICM/derivatives/tracto}; QCR=${QCR:-$ICM/qc}; L=${L:-$ICM/data/bids/derivatives/leaddbs/$SUB}
+T1=$L/coregistration/anat/${SUB}_ses-preop_space-anchorNative_desc-preproc_acq-iso_T1w.nii
+REF=$T/05_ref; I=$T/04_${V}; OUT=$T/05_${V}; QC=$QCR/05_${V}
 mkdir -p $REF $OUT $QC
 if [[ ! -f $REF/T1_brain_mask.nii.gz ]]; then
   echo "== T1 : extraction du cerveau (bet) — commun aux deux variantes"
@@ -23,5 +24,5 @@ mrtransform $I/dwi_unb.mif -linear $OUT/dwi2T1.txt $OUT/dwi_T1.mif -force
 mrtransform $I/mask.mif -linear $OUT/dwi2T1.txt $OUT/mask_T1.mif -force
 mrtransform $I/mask.mif -linear $OUT/dwi2T1.txt -template $REF/T1.nii.gz -interp nearest $OUT/mask_in_T1grid.nii.gz -force
 echo "== [$V] QC"
-$ICM/tools/.venv/bin/python $ICM/scripts/qc_coreg.py $REF $OUT $QC $ICM/data/bids/derivatives/leaddbs/sub-DBS01/atlases
+$ICM/tools/.venv/bin/python $ICM/scripts/qc_coreg.py $REF $OUT $QC $L/atlases
 echo "== fini [$V]. Regarder $QC puis écrire $QC/DECISION.md"
