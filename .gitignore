@@ -1,0 +1,15 @@
+# liste blanche : tout est ignoré sauf ce qui est explicitement repris
+*
+!.gitignore
+!scripts/
+!scripts/*.sh
+!scripts/*.py
+!scripts/*.m
+!qc/
+!qc/**/
+!qc/**/*.png
+!qc/**/*.pdf
+!wp2_leaddbs/
+!wp2_leaddbs/compare/
+!wp2_leaddbs/compare/contacts_distances.csv
+!wp2_leaddbs/compare/ours2theirs_rigid.txt
