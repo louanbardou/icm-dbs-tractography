@@ -17,7 +17,7 @@ def loso(make, target, proba):
     for tr, te in LeaveOneGroupOut().split(X, y, g):
         m = make(); m.fit(X[tr], target[tr]); out[te] = m.predict_proba(X[te])[:, 1] if proba else m.predict(X[te])
     return out
-mk_log = lambda: make_pipeline(StandardScaler(), LogisticRegression(penalty='l1', solver='liblinear', C=0.1, class_weight='balanced', max_iter=2000))
+mk_log = lambda: make_pipeline(StandardScaler(), LogisticRegression(penalty='l1', solver='liblinear', C=float(os.environ.get('C', 1)), class_weight='balanced', max_iter=2000))
 mk_rdg = lambda: make_pipeline(StandardScaler(), Ridge(alpha=1e4))
 res = {}
 if 0 < y.sum() < len(y) and len(set(y)) == 2:
