@@ -20,5 +20,3 @@ No data is included (it's big, get it from ScienceDB). Paths in the scripts are 
 - Tractography runs and looks plausible at the large-tract level.
 - My electrode contacts land within about 0.3 mm of the authors', and the STN overlap is high (Dice 0.90-0.96). Both come from PaCER, and the authors also corrected theirs by hand, so this is agreement, not proof of accuracy.
 - The first VTA came out about twice too big. The cause was a flipped electrode trajectory in my reconstruction file. With it fixed (in a test copy only) the Dice with the authors' VTA is 0.87 on the right and 0.80 on the left. Re-running their own inputs only gives about 0.9, so that's the ceiling.
-
-One patient only, so don't read too much into any of it.
