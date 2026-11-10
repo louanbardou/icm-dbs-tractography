@@ -1,6 +1,6 @@
 # icm-dbs-tractography
 
-Small side project where I play with an open deep brain stimulation (DBS) dataset: one patient with electrodes in the subthalamic nucleus (STN), published on ScienceDB (dataset 26302). It comes with raw MRI/CT, diffusion data and the authors' own Lead-DBS results.
+Small side project where I play with an open deep brain stimulation (DBS) dataset: 14 patients with electrodes in the subthalamic nucleus (STN), published on ScienceDB (dataset 26302). It comes with raw MRI/CT, diffusion data and the authors' own Lead-DBS results. I'm building the pipeline on the first patient (sub-DBS01) before running it on the other 13.
 
 ## What I'm trying to do
 
